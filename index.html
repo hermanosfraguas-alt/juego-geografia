@@ -4,209 +4,242 @@
 <meta charset="UTF-8" />
 <title>Juego de Geografía</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <!-- Leaflet (mapa) -->
 <link
-   rel="stylesheet"
-   href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-   integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-   crossorigin=""
- />
+rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+crossorigin=""
+/>
 <script
-   src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-   integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-   crossorigin=""
+src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+crossorigin=""
 ></script>
+
 <style>
-   * {
-     box-sizing: border-box;
-     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-   }
-   body {
-     margin: 0;
-     background: linear-gradient(135deg, #4f46e5, #8b5cf6);
-     color: #0f172a;
-     min-height: 100vh;
-     display: flex;
-     justify-content: center;
-     padding: 16px;
-   }
-   .app-container {
-     background: #f9fafb;
-     border-radius: 16px;
-     max-width: 900px;
-     width: 100%;
-     padding: 16px;
-     box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
-     display: flex;
-     flex-direction: column;
-     gap: 16px;
-   }
-   header {
-     display: flex;
-     flex-direction: column;
-     gap: 8px;
-   }
-   header h1 {
-     margin: 0;
-     font-size: 1.4rem;
-     color: #111827;
-   }
-   header p {
-     margin: 0;
-     font-size: 0.9rem;
-     color: #6b7280;
-   }
-   .mode-selector {
-     display: flex;
-     gap: 12px;
-     flex-wrap: wrap;
-     margin-top: 4px;
-   }
-   .mode-selector label {
-     display: flex;
-     align-items: center;
-     gap: 4px;
-     font-size: 0.9rem;
-     background: #e5e7eb;
-     padding: 6px 10px;
-     border-radius: 999px;
-   }
-   .badge-level {
-     display: inline-block;
-     padding: 4px 8px;
-     border-radius: 999px;
-     font-size: 0.75rem;
-     background: #eef2ff;
-     color: #4f46e5;
-     font-weight: 500;
-   }
-   .card {
-     background: #ffffff;
-     border-radius: 12px;
-     padding: 12px;
-     box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
-     display: flex;
-     flex-direction: column;
-     gap: 10px;
-   }
-   .card h2 {
-     margin: 0;
-     font-size: 1rem;
-     color: #111827;
-   }
-   .card small {
-     color: #6b7280;
-     font-size: 0.8rem;
-   }
-   .flag-container {
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     padding: 8px;
-   }
-   .flag-container img {
-     max-width: 200px;
-     width: 100%;
-     height: auto;
-     border-radius: 8px;
-     border: 1px solid #e5e7eb;
-     background: #f9fafb;
-   }
-   .input-row {
-     display: flex;
-     gap: 8px;
-     flex-wrap: wrap;
-     align-items: center;
-   }
-   input[type="text"] {
-     flex: 1;
-     padding: 8px 10px;
-     border-radius: 8px;
-     border: 1px solid #d1d5db;
-     font-size: 0.9rem;
-   }
-   button {
-     border: none;
-     border-radius: 999px;
-     padding: 8px 14px;
-     font-size: 0.9rem;
-     cursor: pointer;
-     background: #4f46e5;
-     color: #ffffff;
-     font-weight: 500;
-   }
-   button.secondary {
-     background: #e5e7eb;
-     color: #111827;
-   }
-   button.option-btn {
-     flex: 1 1 calc(50% - 8px);
-     margin-top: 4px;
-     text-align: center;
-     background: #e5e7eb;
-     color: #111827;
-   }
-   button.option-btn.correct {
-     background: #16a34a;
-     color: white;
-   }
-   button.option-btn.wrong {
-     background: #dc2626;
-     color: white;
-   }
-   .options-grid {
-     display: flex;
-     flex-wrap: wrap;
-     gap: 8px;
-   }
-   .message {
-     font-size: 0.85rem;
-     padding: 6px 10px;
-     border-radius: 8px;
-     background: #eff6ff;
-     color: #1d4ed8;
-   }
-   .message.error {
-     background: #fef2f2;
-     color: #b91c1c;
-   }
-   .message.success {
-     background: #ecfdf3;
-     color: #15803d;
-   }
-   #map {
-     width: 100%;
-     height: 350px;
-     border-radius: 12px;
-     overflow: hidden;
-     border: 1px solid #e5e7eb;
-   }
-   .map-info {
-     font-size: 0.85rem;
-     color: #4b5563;
-   }
-   .footer-row {
-     display: flex;
-     justify-content: space-between;
-     align-items: center;
-     gap: 8px;
-     flex-wrap: wrap;
-   }
-   .footer-row button {
-     padding-inline: 16px;
-   }
-   .attempts {
-     font-size: 0.8rem;
-     color: #6b7280;
-   }
-   @media (max-width: 600px) {
-     .app-container {
-       padding: 12px;
-     }
-     #map {
-       height: 260px;
-     }
-   }
+* {
+box-sizing: border-box;
+font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+margin: 0;
+background: linear-gradient(135deg, #4f46e5, #8b5cf6);
+color: #0f172a;
+min-height: 100vh;
+display: flex;
+justify-content: center;
+padding: 16px;
+}
+
+.app-container {
+background: #f9fafb;
+border-radius: 16px;
+max-width: 900px;
+width: 100%;
+padding: 16px;
+box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
+display: flex;
+flex-direction: column;
+gap: 16px;
+}
+
+header {
+display: flex;
+flex-direction: column;
+gap: 8px;
+}
+
+header h1 {
+margin: 0;
+font-size: 1.4rem;
+color: #111827;
+}
+
+header p {
+margin: 0;
+font-size: 0.9rem;
+color: #6b7280;
+}
+
+.mode-selector {
+display: flex;
+gap: 12px;
+flex-wrap: wrap;
+margin-top: 4px;
+}
+
+.mode-selector label {
+display: flex;
+align-items: center;
+gap: 4px;
+font-size: 0.9rem;
+background: #e5e7eb;
+padding: 6px 10px;
+border-radius: 999px;
+}
+
+.badge-level {
+display: inline-block;
+padding: 4px 8px;
+border-radius: 999px;
+font-size: 0.75rem;
+background: #eef2ff;
+color: #4f46e5;
+font-weight: 500;
+}
+
+.card {
+background: #ffffff;
+border-radius: 12px;
+padding: 12px;
+box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+
+.card h2 {
+margin: 0;
+font-size: 1rem;
+color: #111827;
+}
+
+.card small {
+color: #6b7280;
+font-size: 0.8rem;
+}
+
+.flag-container {
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 8px;
+}
+
+.flag-container img {
+max-width: 200px;
+width: 100%;
+height: auto;
+border-radius: 8px;
+border: 1px solid #e5e7eb;
+background: #f9fafb;
+}
+
+.input-row {
+display: flex;
+gap: 8px;
+flex-wrap: wrap;
+align-items: center;
+}
+
+input[type="text"] {
+flex: 1;
+padding: 8px 10px;
+border-radius: 8px;
+border: 1px solid #d1d5db;
+font-size: 0.9rem;
+}
+
+button {
+border: none;
+border-radius: 999px;
+padding: 8px 14px;
+font-size: 0.9rem;
+cursor: pointer;
+background: #4f46e5;
+color: #ffffff;
+font-weight: 500;
+}
+
+button.secondary {
+background: #e5e7eb;
+color: #111827;
+}
+
+button.option-btn {
+flex: 1 1 calc(50% - 8px);
+margin-top: 4px;
+text-align: center;
+background: #e5e7eb;
+color: #111827;
+}
+
+button.option-btn.correct {
+background: #16a34a;
+color: white;
+}
+
+button.option-btn.wrong {
+background: #dc2626;
+color: white;
+}
+
+.options-grid {
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+}
+
+.message {
+font-size: 0.85rem;
+padding: 6px 10px;
+border-radius: 8px;
+background: #eff6ff;
+color: #1d4ed8;
+}
+
+.message.error {
+background: #fef2f2;
+color: #b91c1c;
+}
+
+.message.success {
+background: #ecfdf3;
+color: #15803d;
+}
+
+#map {
+width: 100%;
+height: 350px;
+border-radius: 12px;
+overflow: hidden;
+border: 1px solid #e5e7eb;
+background: #e5e7eb;
+}
+
+.map-info {
+font-size: 0.85rem;
+color: #4b5563;
+}
+
+.footer-row {
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 8px;
+flex-wrap: wrap;
+}
+
+.footer-row button {
+padding-inline: 16px;
+}
+
+.attempts {
+font-size: 0.8rem;
+color: #6b7280;
+}
+
+@media (max-width: 600px) {
+.app-container {
+padding: 12px;
+}
+#map {
+height: 260px;
+}
+}
 </style>
 </head>
 <body>
@@ -218,16 +251,20 @@
 <span class="badge-level">Modo de juego:</span>
 <label>
 <input type="radio" name="mode" value="write" checked />
-         Escribir respuestas
+Escribir respuestas
 </label>
 <label>
 <input type="radio" name="mode" value="options" />
-         Opciones tipo test
+Opciones tipo test
 </label>
 </div>
+<div id="loading-message" class="message" style="margin-top:8px;">
+Cargando todos los países y banderas del mundo...
+</div>
 </header>
+
 <!-- Nivel 1: Bandera -> País -->
-<section class="card" id="level1">
+<section class="card" id="level1" style="display:none;">
 <div>
 <span class="badge-level">Nivel 1</span>
 <h2>Adivina el país por la bandera</h2>
@@ -236,479 +273,581 @@
 <div class="flag-container">
 <img id="flag-img" src="" alt="Bandera del país" />
 </div>
+
 <!-- Modo escritura -->
 <div id="country-write-area">
 <div class="input-row">
 <input
-           type="text"
-           id="country-input"
-           placeholder="Escribe el país..."
-           list="country-suggestions"
-         />
+type="text"
+id="country-input"
+placeholder="Escribe el país..."
+list="country-suggestions"
+/>
 <datalist id="country-suggestions"></datalist>
 <button id="check-country-btn">Comprobar país</button>
 </div>
 </div>
+
 <!-- Modo opciones -->
 <div id="country-options-area" style="display:none;">
 <div class="options-grid" id="country-options-grid"></div>
 </div>
+
 <div id="country-message" class="message" style="display:none;"></div>
 </section>
+
 <!-- Nivel 2: País -> Capital -->
 <section class="card" id="level2" style="display:none;">
 <div>
 <span class="badge-level">Nivel 2</span>
 <h2>Adivina la capital de <span id="country-name-capital"></span></h2>
 <small>
-         En modo escritura solo tienes <strong>2 intentos</strong>. Luego se muestra la respuesta correcta.
+En modo escritura solo tienes <strong>2 intentos</strong>. Luego se muestra la respuesta correcta.
 </small>
 </div>
+
 <!-- Modo escritura -->
 <div id="capital-write-area">
 <div class="input-row">
 <input
-           type="text"
-           id="capital-input"
-           placeholder="Escribe la capital..."
-           list="capital-suggestions"
-         />
+type="text"
+id="capital-input"
+placeholder="Escribe la capital..."
+list="capital-suggestions"
+/>
 <datalist id="capital-suggestions"></datalist>
 <button id="check-capital-btn">Comprobar capital</button>
 </div>
 <div class="attempts" id="capital-attempts-info"></div>
 </div>
+
 <!-- Modo opciones -->
 <div id="capital-options-area" style="display:none;">
 <div class="options-grid" id="capital-options-grid"></div>
 </div>
+
 <div id="capital-message" class="message" style="display:none;"></div>
 <button id="skip-to-map-btn" class="secondary" style="display:none;">Continuar al mapa</button>
 </section>
+
 <!-- Nivel 3: Mapa -->
 <section class="card" id="level3" style="display:none;">
 <div>
 <span class="badge-level">Nivel 3</span>
 <h2>Encuentra <span id="country-name-map"></span> en el mapa</h2>
 <small>
-         Tienes <strong>3 intentos</strong>. Haz zoom y toca sobre el país.
+Tienes <strong>3 intentos</strong>. Haz zoom y toca sobre el país.
 </small>
 </div>
 <div class="map-info">
-       Haz clic en el mapa. Si fallas, podrás intentarlo de nuevo hasta 3 veces. Después se mostrará
-       la ubicación correcta con un recuadro que incluye bandera, país y capital.
+Haz clic en el mapa. Si fallas, podrás intentarlo de nuevo hasta 3 veces. Después se mostrará
+la ubicación correcta con un recuadro que incluye bandera, país y capital.
 </div>
 <div id="map"></div>
 <div class="attempts" id="map-attempts-info"></div>
 <div id="map-message" class="message" style="display:none;"></div>
 </section>
+
 <div class="footer-row">
 <div class="attempts">
-       Ronda actual: <span id="round-number">1</span>
+Ronda actual: <span id="round-number">1</span>
 </div>
 <button id="next-round-btn" style="display:none;">Siguiente país</button>
 </div>
 </div>
+
 <script>
-   // ========= DATOS DE PAÍSES =========
-   // Puedes añadir más países a esta lista siguiendo el mismo formato.
-   const COUNTRIES = [
-     { name: "España", capital: "Madrid", iso2: "es", lat: 40.4637, lng: -3.7492 },
-     { name: "Francia", capital: "París", iso2: "fr", lat: 46.2276, lng: 2.2137 },
-     { name: "Alemania", capital: "Berlín", iso2: "de", lat: 51.1657, lng: 10.4515 },
-     { name: "Italia", capital: "Roma", iso2: "it", lat: 41.8719, lng: 12.5674 },
-     { name: "Portugal", capital: "Lisboa", iso2: "pt", lat: 39.3999, lng: -8.2245 },
-     { name: "Reino Unido", capital: "Londres", iso2: "gb", lat: 55.3781, lng: -3.4360 },
-     { name: "Irlanda", capital: "Dublín", iso2: "ie", lat: 53.1424, lng: -7.6921 },
-     { name: "Bélgica", capital: "Bruselas", iso2: "be", lat: 50.5039, lng: 4.4699 },
-     { name: "Países Bajos", capital: "Ámsterdam", iso2: "nl", lat: 52.1326, lng: 5.2913 },
-     { name: "Luxemburgo", capital: "Luxemburgo", iso2: "lu", lat: 49.8153, lng: 6.1296 },
-     { name: "Suiza", capital: "Berna", iso2: "ch", lat: 46.8182, lng: 8.2275 },
-     { name: "Austria", capital: "Viena", iso2: "at", lat: 47.5162, lng: 14.5501 },
-     { name: "Noruega", capital: "Oslo", iso2: "no", lat: 60.4720, lng: 8.4689 },
-     { name: "Suecia", capital: "Estocolmo", iso2: "se", lat: 60.1282, lng: 18.6435 },
-     { name: "Finlandia", capital: "Helsinki", iso2: "fi", lat: 61.9241, lng: 25.7482 },
-     { name: "Dinamarca", capital: "Copenhague", iso2: "dk", lat: 56.2639, lng: 9.5018 },
-     { name: "Polonia", capital: "Varsovia", iso2: "pl", lat: 51.9194, lng: 19.1451 },
-     { name: "Grecia", capital: "Atenas", iso2: "gr", lat: 39.0742, lng: 21.8243 },
-     { name: "Estados Unidos", capital: "Washington D. C.", iso2: "us", lat: 37.0902, lng: -95.7129 },
-     { name: "Canadá", capital: "Ottawa", iso2: "ca", lat: 56.1304, lng: -106.3468 },
-     { name: "México", capital: "Ciudad de México", iso2: "mx", lat: 23.6345, lng: -102.5528 },
-     { name: "Brasil", capital: "Brasilia", iso2: "br", lat: -14.2350, lng: -51.9253 },
-     { name: "Argentina", capital: "Buenos Aires", iso2: "ar", lat: -38.4161, lng: -63.6167 },
-     { name: "Japón", capital: "Tokio", iso2: "jp", lat: 36.2048, lng: 138.2529 },
-     { name: "China", capital: "Pekín", iso2: "cn", lat: 35.8617, lng: 104.1954 },
-     { name: "India", capital: "Nueva Delhi", iso2: "in", lat: 20.5937, lng: 78.9629 },
-     { name: "Australia", capital: "Canberra", iso2: "au", lat: -25.2744, lng: 133.7751 },
-     { name: "Sudáfrica", capital: "Pretoria", iso2: "za", lat: -30.5595, lng: 22.9375 },
-     { name: "Rusia", capital: "Moscú", iso2: "ru", lat: 61.5240, lng: 105.3188 },
-     { name: "Turquía", capital: "Ankara", iso2: "tr", lat: 38.9637, lng: 35.2433 },
-     { name: "Marruecos", capital: "Rabat", iso2: "ma", lat: 31.7917, lng: -7.0926 },
-     { name: "Egipto", capital: "El Cairo", iso2: "eg", lat: 26.8206, lng: 30.8025 }
-   ];
-   // ========= ESTADO DEL JUEGO =========
-   let currentCountry = null;
-   let roundNumber = 1;
-   let capitalAttempts = 0;
-   let mapAttempts = 0;
-   let map;
-   let mapMarkers = [];
-   // ========= UTILIDADES =========
-   function normalizeText(text) {
-     return text
-       .toString()
-       .trim()
-       .toLowerCase()
-       .normalize("NFD")
-       .replace(/[\u0300-\u036f]/g, "");
-   }
-   function getMode() {
-     const checked = document.querySelector('input[name="mode"]:checked');
-     return checked ? checked.value : "write";
-   }
-   function randomCountry() {
-     const idx = Math.floor(Math.random() * COUNTRIES.length);
-     return COUNTRIES[idx];
-   }
-   function getRandomOptions(correctItem, key) {
-     const options = [correctItem];
-     const usedNames = new Set([correctItem[key]]);
-     while (options.length < 4) {
-       const candidate = randomCountry();
-       const value = candidate[key];
-       if (!usedNames.has(value)) {
-         usedNames.add(value);
-         options.push(candidate);
-       }
-     }
-     // mezclar
-     for (let i = options.length - 1; i > 0; i--) {
-       const j = Math.floor(Math.random() * (i + 1));
-       [options[i], options[j]] = [options[j], options[i]];
-     }
-     return options;
-   }
-   function clearMessages() {
-     document.getElementById("country-message").style.display = "none";
-     document.getElementById("capital-message").style.display = "none";
-     document.getElementById("map-message").style.display = "none";
-   }
-   function setMessage(elementId, text, type = "info") {
-     const el = document.getElementById(elementId);
-     el.textContent = text;
-     el.className = "message";
-     if (type === "error") el.classList.add("error");
-     if (type === "success") el.classList.add("success");
-     el.style.display = "block";
-   }
-   function updateSuggestions(inputEl, datalistEl, items, field) {
-     const query = normalizeText(inputEl.value);
-     datalistEl.innerHTML = "";
-     if (!query) return;
-     const matches = items.filter(item =>
-       normalizeText(item[field]).startsWith(query)
-     );
-     matches.forEach(item => {
-       const opt = document.createElement("option");
-       opt.value = item[field];
-       datalistEl.appendChild(opt);
-     });
-   }
-   // ========= NIVEL 1: PAÍS POR BANDERA =========
-   function loadLevel1() {
-     const flagImg = document.getElementById("flag-img");
-     const flagUrl = `https://flagcdn.com/w320/${currentCountry.iso2}.png`;
-     flagImg.src = flagUrl;
-     flagImg.alt = `Bandera de ${currentCountry.name}`;
-     document.getElementById("country-input").value = "";
-     document.getElementById("country-options-grid").innerHTML = "";
-     document.getElementById("country-message").style.display = "none";
-     const mode = getMode();
-     if (mode === "write") {
-       document.getElementById("country-write-area").style.display = "block";
-       document.getElementById("country-options-area").style.display = "none";
-     } else {
-       document.getElementById("country-write-area").style.display = "none";
-       document.getElementById("country-options-area").style.display = "block";
-       fillCountryOptions();
-     }
-   }
-   function fillCountryOptions() {
-     const grid = document.getElementById("country-options-grid");
-     grid.innerHTML = "";
-     const options = getRandomOptions(currentCountry, "name");
-     options.forEach(optCountry => {
-       const btn = document.createElement("button");
-       btn.className = "option-btn";
-       btn.textContent = optCountry.name;
-       btn.onclick = () => checkCountryOption(btn, optCountry);
-       grid.appendChild(btn);
-     });
-   }
-   function checkCountryWrite() {
-     const input = document.getElementById("country-input").value;
-     if (!input.trim()) return;
-     const answer = normalizeText(input);
-     const correct = normalizeText(currentCountry.name);
-     if (answer === correct) {
-       setMessage("country-message", "¡Correcto! Has acertado el país.", "success");
-       goToLevel2();
-     } else {
-       setMessage("country-message", "Incorrecto. Sigue intentando.", "error");
-     }
-   }
-   function checkCountryOption(buttonEl, chosenCountry) {
-     const correct = chosenCountry.name === currentCountry.name;
-     const buttons = document.querySelectorAll("#country-options-grid .option-btn");
-     buttons.forEach(btn => (btn.disabled = false)); // seguir pudiendo pulsar
-     if (correct) {
-       buttonEl.classList.remove("wrong");
-       buttonEl.classList.add("correct");
-       setMessage("country-message", "¡Correcto! Has acertado el país.", "success");
-       goToLevel2();
-     } else {
-       buttonEl.classList.add("wrong");
-       setMessage("country-message", "Incorrecto. Prueba otra opción.", "error");
-     }
-   }
-   // ========= NIVEL 2: CAPITAL =========
-   function loadLevel2() {
-     document.getElementById("level2").style.display = "block";
-     document.getElementById("country-name-capital").textContent = currentCountry.name;
-     document.getElementById("capital-input").value = "";
-     document.getElementById("capital-message").style.display = "none";
-     document.getElementById("skip-to-map-btn").style.display = "none";
-     capitalAttempts = 0;
-     document.getElementById("capital-attempts-info").textContent =
-       "Intentos usados: 0 de 2";
-     const mode = getMode();
-     if (mode === "write") {
-       document.getElementById("capital-write-area").style.display = "block";
-       document.getElementById("capital-options-area").style.display = "none";
-     } else {
-       document.getElementById("capital-write-area").style.display = "none";
-       document.getElementById("capital-options-area").style.display = "block";
-       fillCapitalOptions();
-     }
-   }
-   function fillCapitalOptions() {
-     const grid = document.getElementById("capital-options-grid");
-     grid.innerHTML = "";
-     const options = getRandomOptions(currentCountry, "capital");
-     options.forEach(optCountry => {
-       const btn = document.createElement("button");
-       btn.className = "option-btn";
-       btn.textContent = optCountry.capital;
-       btn.onclick = () => checkCapitalOption(btn, optCountry);
-       grid.appendChild(btn);
-     });
-   }
-   function checkCapitalWrite() {
-     const input = document.getElementById("capital-input").value;
-     if (!input.trim()) return;
-     capitalAttempts++;
-     document.getElementById("capital-attempts-info").textContent =
-       `Intentos usados: ${capitalAttempts} de 2`;
-     const answer = normalizeText(input);
-     const correct = normalizeText(currentCountry.capital);
-     if (answer === correct) {
-       setMessage("capital-message", "¡Correcto! Has acertado la capital.", "success");
-       goToLevel3();
-     } else {
-       if (capitalAttempts < 2) {
-         setMessage("capital-message", "Incorrecto. Te queda otro intento.", "error");
-       } else {
-         setMessage(
-           "capital-message",
-           `Incorrecto. La capital correcta es: ${currentCountry.capital}.`,
-           "error"
-         );
-         document.getElementById("skip-to-map-btn").style.display = "inline-block";
-       }
-     }
-   }
-   function checkCapitalOption(buttonEl, chosenCountry) {
-     const correct = chosenCountry.capital === currentCountry.capital;
-     if (correct) {
-       buttonEl.classList.remove("wrong");
-       buttonEl.classList.add("correct");
-       setMessage("capital-message", "¡Correcto! Has acertado la capital.", "success");
-       goToLevel3();
-     } else {
-       buttonEl.classList.add("wrong");
-       setMessage("capital-message", "Incorrecto. Prueba otra capital.", "error");
-     }
-   }
-   // ========= NIVEL 3: MAPA =========
-   function initMap() {
-     map = L.map("map").setView([20, 0], 2);
-     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-       maxZoom: 5,
-       attribution: "© OpenStreetMap contributors"
-     }).addTo(map);
-     map.on("click", onMapClick);
-   }
-   function clearMapMarkers() {
-     mapMarkers.forEach(m => map.removeLayer(m));
-     mapMarkers = [];
-   }
-   function onMapClick(e) {
-     if (!currentCountry) return;
-     if (mapAttempts >= 3) {
-       setMessage("map-message", "Ya no tienes más intentos. Pulsa Siguiente país.", "error");
-       return;
-     }
-     mapAttempts++;
-     const clickedLat = e.latlng.lat;
-     const clickedLng = e.latlng.lng;
-     const distanceKm = haversineDistance(
-       clickedLat,
-       clickedLng,
-       currentCountry.lat,
-       currentCountry.lng
-     );
-     const thresholdKm = 500; // distancia aceptable
-     if (distanceKm <= thresholdKm) {
-       showCorrectLocation(true);
-     } else {
-       if (mapAttempts < 3) {
-         setMessage(
-           "map-message",
-           `Incorrecto. Estás a unos ${Math.round(
-             distanceKm
-           )} km. Te quedan ${3 - mapAttempts} intentos.`,
-           "error"
-         );
-       } else {
-         setMessage(
-           "map-message",
-           `Has agotado los intentos. Te mostramos la ubicación correcta.`,
-           "error"
-         );
-         showCorrectLocation(false);
-       }
-     }
-     document.getElementById("map-attempts-info").textContent =
-       `Intentos usados: ${mapAttempts} de 3`;
-   }
-   function haversineDistance(lat1, lon1, lat2, lon2) {
-     const R = 6371; // km
-     const toRad = deg => (deg * Math.PI) / 180;
-     const dLat = toRad(lat2 - lat1);
-     const dLon = toRad(lon2 - lon1);
-     const a =
-       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-       Math.cos(toRad(lat1)) *
-         Math.cos(toRad(lat2)) *
-         Math.sin(dLon / 2) *
-         Math.sin(dLon / 2);
-     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-     return R * c;
-   }
-   function showCorrectLocation(fromCorrectClick) {
-     clearMapMarkers();
-     const marker = L.marker([currentCountry.lat, currentCountry.lng]).addTo(map);
-     mapMarkers.push(marker);
-     const flagUrl = `https://flagcdn.com/w80/${currentCountry.iso2}.png`;
-     const popupHtml = `
+// ========= CARGA DE TODOS LOS PAÍSES =========
+// Usamos una base de datos pública con:
+// name, alpha2, capital, geo.lat, geo.long
+const COUNTRIES_URL =
+"https://raw.githubusercontent.com/Khodour/countries.json/main/countries.json";
+
+let COUNTRIES = [];
+let currentCountry = null;
+let roundNumber = 1;
+let capitalAttempts = 0;
+let mapAttempts = 0;
+
+let map;
+let mapMarkers = [];
+let countriesLoaded = false;
+
+// ========= UTILIDADES =========
+function normalizeText(text) {
+return text
+.toString()
+.trim()
+.toLowerCase()
+.normalize("NFD")
+.replace(/[\u0300-\u036f]/g, "");
+}
+
+function getMode() {
+const checked = document.querySelector('input[name="mode"]:checked');
+return checked ? checked.value : "write";
+}
+
+function randomCountry() {
+if (!COUNTRIES.length) return null;
+const idx = Math.floor(Math.random() * COUNTRIES.length);
+return COUNTRIES[idx];
+}
+
+function getRandomOptions(correctItem, key) {
+const options = [correctItem];
+const used = new Set([correctItem[key]]);
+
+while (options.length < 4 && options.length < COUNTRIES.length) {
+const candidate = randomCountry();
+if (!candidate) break;
+const value = candidate[key];
+if (value && !used.has(value)) {
+used.add(value);
+options.push(candidate);
+}
+}
+
+// mezclar
+for (let i = options.length - 1; i > 0; i--) {
+const j = Math.floor(Math.random() * (i + 1));
+[options[i], options[j]] = [options[j], options[i]];
+}
+return options;
+}
+
+function clearMessages() {
+document.getElementById("country-message").style.display = "none";
+document.getElementById("capital-message").style.display = "none";
+document.getElementById("map-message").style.display = "none";
+}
+
+function setMessage(elementId, text, type = "info") {
+const el = document.getElementById(elementId);
+el.textContent = text;
+el.className = "message";
+if (type === "error") el.classList.add("error");
+if (type === "success") el.classList.add("success");
+el.style.display = "block";
+}
+
+function updateSuggestions(inputEl, datalistEl, items, field) {
+const query = normalizeText(inputEl.value);
+datalistEl.innerHTML = "";
+if (!query) return;
+
+const matches = items.filter(item =>
+normalizeText(item[field]).startsWith(query)
+);
+
+matches.forEach(item => {
+const opt = document.createElement("option");
+opt.value = item[field];
+datalistEl.appendChild(opt);
+});
+}
+
+// ========= NIVEL 1: PAÍS POR BANDERA =========
+function loadLevel1() {
+if (!currentCountry) return;
+
+const flagImg = document.getElementById("flag-img");
+const flagUrl = `https://flagcdn.com/w320/${currentCountry.iso2}.png`;
+flagImg.src = flagUrl;
+flagImg.alt = `Bandera de ${currentCountry.name}`;
+
+document.getElementById("country-input").value = "";
+document.getElementById("country-options-grid").innerHTML = "";
+document.getElementById("country-message").style.display = "none";
+
+const mode = getMode();
+if (mode === "write") {
+document.getElementById("country-write-area").style.display = "block";
+document.getElementById("country-options-area").style.display = "none";
+} else {
+document.getElementById("country-write-area").style.display = "none";
+document.getElementById("country-options-area").style.display = "block";
+fillCountryOptions();
+}
+
+document.getElementById("level1").style.display = "block";
+}
+
+function fillCountryOptions() {
+const grid = document.getElementById("country-options-grid");
+grid.innerHTML = "";
+const options = getRandomOptions(currentCountry, "name");
+options.forEach(optCountry => {
+const btn = document.createElement("button");
+btn.className = "option-btn";
+btn.textContent = optCountry.name;
+btn.onclick = () => checkCountryOption(btn, optCountry);
+grid.appendChild(btn);
+});
+}
+
+function checkCountryWrite() {
+const input = document.getElementById("country-input").value;
+if (!input.trim()) return;
+
+const answer = normalizeText(input);
+const correct = normalizeText(currentCountry.name);
+
+if (answer === correct) {
+setMessage("country-message", "¡Correcto! Has acertado el país.", "success");
+goToLevel2();
+} else {
+setMessage("country-message", "Incorrecto. Sigue intentando.", "error");
+}
+}
+
+function checkCountryOption(buttonEl, chosenCountry) {
+const correct = chosenCountry.name === currentCountry.name;
+const buttons = document.querySelectorAll("#country-options-grid .option-btn");
+buttons.forEach(btn => (btn.disabled = false));
+
+if (correct) {
+buttonEl.classList.remove("wrong");
+buttonEl.classList.add("correct");
+setMessage("country-message", "¡Correcto! Has acertado el país.", "success");
+goToLevel2();
+} else {
+buttonEl.classList.add("wrong");
+setMessage("country-message", "Incorrecto. Prueba otra opción.", "error");
+}
+}
+
+// ========= NIVEL 2: CAPITAL =========
+function loadLevel2() {
+document.getElementById("level2").style.display = "block";
+document.getElementById("country-name-capital").textContent = currentCountry.name;
+document.getElementById("capital-input").value = "";
+document.getElementById("capital-message").style.display = "none";
+document.getElementById("skip-to-map-btn").style.display = "none";
+capitalAttempts = 0;
+document.getElementById("capital-attempts-info").textContent =
+"Intentos usados: 0 de 2";
+
+const mode = getMode();
+if (mode === "write") {
+document.getElementById("capital-write-area").style.display = "block";
+document.getElementById("capital-options-area").style.display = "none";
+} else {
+document.getElementById("capital-write-area").style.display = "none";
+document.getElementById("capital-options-area").style.display = "block";
+fillCapitalOptions();
+}
+}
+
+function fillCapitalOptions() {
+const grid = document.getElementById("capital-options-grid");
+grid.innerHTML = "";
+const options = getRandomOptions(currentCountry, "capital");
+options.forEach(optCountry => {
+const btn = document.createElement("button");
+btn.className = "option-btn";
+btn.textContent = optCountry.capital;
+btn.onclick = () => checkCapitalOption(btn, optCountry);
+grid.appendChild(btn);
+});
+}
+
+function checkCapitalWrite() {
+const input = document.getElementById("capital-input").value;
+if (!input.trim()) return;
+
+capitalAttempts++;
+document.getElementById("capital-attempts-info").textContent =
+`Intentos usados: ${capitalAttempts} de 2`;
+
+const answer = normalizeText(input);
+const correct = normalizeText(currentCountry.capital);
+
+if (answer === correct) {
+setMessage("capital-message", "¡Correcto! Has acertado la capital.", "success");
+goToLevel3();
+} else {
+if (capitalAttempts < 2) {
+setMessage("capital-message", "Incorrecto. Te queda otro intento.", "error");
+} else {
+setMessage(
+"capital-message",
+`Incorrecto. La capital correcta es: ${currentCountry.capital}.`,
+"error"
+);
+document.getElementById("skip-to-map-btn").style.display = "inline-block";
+}
+}
+}
+
+function checkCapitalOption(buttonEl, chosenCountry) {
+const correct = chosenCountry.capital === currentCountry.capital;
+
+if (correct) {
+buttonEl.classList.remove("wrong");
+buttonEl.classList.add("correct");
+setMessage("capital-message", "¡Correcto! Has acertado la capital.", "success");
+goToLevel3();
+} else {
+buttonEl.classList.add("wrong");
+setMessage("capital-message", "Incorrecto. Prueba otra capital.", "error");
+}
+}
+
+// ========= NIVEL 3: MAPA =========
+function initMap() {
+map = L.map("map").setView([20, 0], 2);
+
+// Mapa político por colores (Carto Voyager)
+L.tileLayer(
+"https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+{
+maxZoom: 6,
+attribution:
+"&copy; OpenStreetMap contributors &copy; CARTO"
+}
+).addTo(map);
+
+map.on("click", onMapClick);
+}
+
+function clearMapMarkers() {
+mapMarkers.forEach(m => map.removeLayer(m));
+mapMarkers = [];
+}
+
+function onMapClick(e) {
+if (!currentCountry) return;
+
+if (mapAttempts >= 3) {
+setMessage("map-message", "Ya no tienes más intentos. Pulsa Siguiente país.", "error");
+return;
+}
+
+mapAttempts++;
+const clickedLat = e.latlng.lat;
+const clickedLng = e.latlng.lng;
+
+const distanceKm = haversineDistance(
+clickedLat,
+clickedLng,
+currentCountry.lat,
+currentCountry.lng
+);
+
+const thresholdKm = 500; // distancia aceptable
+
+if (distanceKm <= thresholdKm) {
+showCorrectLocation(true);
+} else {
+if (mapAttempts < 3) {
+setMessage(
+"map-message",
+`Incorrecto. Estás a unos ${Math.round(
+distanceKm
+)} km. Te quedan ${3 - mapAttempts} intentos.`,
+"error"
+);
+} else {
+setMessage(
+"map-message",
+`Has agotado los intentos. Te mostramos la ubicación correcta.`,
+"error"
+);
+showCorrectLocation(false);
+}
+}
+
+document.getElementById("map-attempts-info").textContent =
+`Intentos usados: ${mapAttempts} de 3`;
+}
+
+function haversineDistance(lat1, lon1, lat2, lon2) {
+const R = 6371; // km
+const toRad = deg => (deg * Math.PI) / 180;
+const dLat = toRad(lat2 - lat1);
+const dLon = toRad(lon2 - lon1);
+const a =
+Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+Math.cos(toRad(lat1)) *
+Math.cos(toRad(lat2)) *
+Math.sin(dLon / 2) *
+Math.sin(dLon / 2);
+const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+return R * c;
+}
+
+function showCorrectLocation(fromCorrectClick) {
+clearMapMarkers();
+const marker = L.marker([currentCountry.lat, currentCountry.lng]).addTo(map);
+mapMarkers.push(marker);
+
+const flagUrl = `https://flagcdn.com/w80/${currentCountry.iso2}.png`;
+const popupHtml = `
 <div style="font-size:0.9rem;">
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
 <img src="${flagUrl}" alt="Bandera" style="border-radius:4px;border:1px solid #e5e7eb;" />
 <div>
 <strong>${currentCountry.name}</strong><br />
-             Capital: ${currentCountry.capital}
+Capital: ${currentCountry.capital}
 </div>
 </div>
 </div>
-     `;
-     marker.bindPopup(popupHtml).openPopup();
-     map.setView([currentCountry.lat, currentCountry.lng], 4);
-     setMessage(
-       "map-message",
-       fromCorrectClick ? "¡Correcto! Has localizado el país." : "Aquí está el país correcto.",
-       fromCorrectClick ? "success" : "info"
-     );
-     document.getElementById("next-round-btn").style.display = "inline-block";
-   }
-   function loadLevel3() {
-     document.getElementById("level3").style.display = "block";
-     document.getElementById("country-name-map").textContent = currentCountry.name;
-     document.getElementById("map-message").style.display = "none";
-     document.getElementById("next-round-btn").style.display = "none";
-     mapAttempts = 0;
-     document.getElementById("map-attempts-info").textContent =
-       "Intentos usados: 0 de 3";
-     clearMapMarkers();
-     map.setView([20, 0], 2);
-   }
-   // ========= FLUJO GENERAL =========
-   function startNewRound() {
-     clearMessages();
-     document.getElementById("level2").style.display = "none";
-     document.getElementById("level3").style.display = "none";
-     document.getElementById("next-round-btn").style.display = "none";
-     currentCountry = randomCountry();
-     capitalAttempts = 0;
-     mapAttempts = 0;
-     document.getElementById("round-number").textContent = roundNumber;
-     loadLevel1();
-   }
-   function goToLevel2() {
-     loadLevel2();
-   }
-   function goToLevel3() {
-     loadLevel3();
-   }
-   // ========= EVENTOS DOM =========
-   window.addEventListener("DOMContentLoaded", () => {
-     // Inicializar mapa
-     initMap();
-     // Primera ronda
-     startNewRound();
-     // Modo de juego cambia
-     const modeRadios = document.querySelectorAll('input[name="mode"]');
-     modeRadios.forEach(radio => {
-       radio.addEventListener("change", () => {
-         // reiniciamos la ronda con el nuevo modo
-         startNewRound();
-       });
-     });
-     // Nivel 1: escritura
-     document.getElementById("check-country-btn").addEventListener("click", checkCountryWrite);
-     document.getElementById("country-input").addEventListener("keydown", e => {
-       if (e.key === "Enter") checkCountryWrite();
-     });
-     document.getElementById("country-input").addEventListener("input", () => {
-       updateSuggestions(
-         document.getElementById("country-input"),
-         document.getElementById("country-suggestions"),
-         COUNTRIES,
-         "name"
-       );
-     });
-     // Nivel 2: escritura
-     document.getElementById("check-capital-btn").addEventListener("click", checkCapitalWrite);
-     document.getElementById("capital-input").addEventListener("keydown", e => {
-       if (e.key === "Enter") checkCapitalWrite();
-     });
-     document.getElementById("capital-input").addEventListener("input", () => {
-       // sugerencias de capital
-       const items = COUNTRIES.map(c => ({ capital: c.capital }));
-       updateSuggestions(
-         document.getElementById("capital-input"),
-         document.getElementById("capital-suggestions"),
-         COUNTRIES,
-         "capital"
-       );
-     });
-     // Botón continuar al mapa (cuando fallas 2 veces la capital en escritura)
-     document.getElementById("skip-to-map-btn").addEventListener("click", goToLevel3);
-     // Botón siguiente ronda
-     document.getElementById("next-round-btn").addEventListener("click", () => {
-       roundNumber++;
-       startNewRound();
-     });
-   });
+`;
+marker.bindPopup(popupHtml).openPopup();
+map.setView([currentCountry.lat, currentCountry.lng], 4);
+
+setMessage(
+"map-message",
+fromCorrectClick ? "¡Correcto! Has localizado el país." : "Aquí está el país correcto.",
+fromCorrectClick ? "success" : "info"
+);
+
+document.getElementById("next-round-btn").style.display = "inline-block";
+}
+
+function loadLevel3() {
+document.getElementById("level3").style.display = "block";
+document.getElementById("country-name-map").textContent = currentCountry.name;
+document.getElementById("map-message").style.display = "none";
+document.getElementById("next-round-btn").style.display = "none";
+mapAttempts = 0;
+document.getElementById("map-attempts-info").textContent =
+"Intentos usados: 0 de 3";
+
+clearMapMarkers();
+map.setView([20, 0], 2);
+
+// Arregla mapa gris (recalcula tamaño al mostrarse la tarjeta)
+setTimeout(() => {
+map.invalidateSize();
+}, 150);
+}
+
+// ========= FLUJO GENERAL =========
+function startNewRound() {
+if (!COUNTRIES.length) {
+setMessage(
+"country-message",
+"No se han podido cargar los países. Revisa tu conexión a Internet y recarga la página.",
+"error"
+);
+return;
+}
+
+clearMessages();
+document.getElementById("level2").style.display = "none";
+document.getElementById("level3").style.display = "none";
+document.getElementById("next-round-btn").style.display = "none";
+
+currentCountry = randomCountry();
+capitalAttempts = 0;
+mapAttempts = 0;
+
+document.getElementById("round-number").textContent = roundNumber;
+
+loadLevel1();
+}
+
+function goToLevel2() {
+loadLevel2();
+}
+
+function goToLevel3() {
+loadLevel3();
+}
+
+async function loadCountries() {
+try {
+const res = await fetch(COUNTRIES_URL);
+const data = await res.json();
+
+// Transformamos al formato que usa el juego
+COUNTRIES = data
+.filter(c => c.alpha2 && c.capital && c.geo && typeof c.geo.lat === "number")
+.map(c => ({
+name: c.name, // nombres en inglés
+capital: c.capital,
+iso2: c.alpha2.toLowerCase(),
+lat: c.geo.lat,
+lng: c.geo.long
+}));
+
+countriesLoaded = true;
+document.getElementById("loading-message").style.display = "none";
+document.getElementById("level1").style.display = "block";
+
+startNewRound();
+} catch (err) {
+console.error(err);
+document.getElementById("loading-message").textContent =
+"Error cargando los países. Revisa tu conexión y recarga la página.";
+}
+}
+
+// ========= EVENTOS DOM =========
+window.addEventListener("DOMContentLoaded", () => {
+// Inicializar mapa
+initMap();
+
+// Cargar países (todos los del mundo)
+loadCountries();
+
+// Modo de juego cambia
+const modeRadios = document.querySelectorAll('input[name="mode"]');
+modeRadios.forEach(radio => {
+radio.addEventListener("change", () => {
+if (countriesLoaded) {
+roundNumber = 1;
+startNewRound();
+}
+});
+});
+
+// Nivel 1: escritura
+document.getElementById("check-country-btn").addEventListener("click", checkCountryWrite);
+document.getElementById("country-input").addEventListener("keydown", e => {
+if (e.key === "Enter") checkCountryWrite();
+});
+document.getElementById("country-input").addEventListener("input", () => {
+updateSuggestions(
+document.getElementById("country-input"),
+document.getElementById("country-suggestions"),
+COUNTRIES,
+"name"
+);
+});
+
+// Nivel 2: escritura
+document.getElementById("check-capital-btn").addEventListener("click", checkCapitalWrite);
+document.getElementById("capital-input").addEventListener("keydown", e => {
+if (e.key === "Enter") checkCapitalWrite();
+});
+document.getElementById("capital-input").addEventListener("input", () => {
+updateSuggestions(
+document.getElementById("capital-input"),
+document.getElementById("capital-suggestions"),
+COUNTRIES,
+"capital"
+);
+});
+
+// Botón continuar al mapa (cuando fallas 2 veces la capital en escritura)
+document.getElementById("skip-to-map-btn").addEventListener("click", goToLevel3);
+
+// Botón siguiente ronda
+document.getElementById("next-round-btn").addEventListener("click", () => {
+roundNumber++;
+startNewRound();
+});
+
+// Por si se redimensiona la ventana en móvil
+window.addEventListener("resize", () => {
+if (map) {
+setTimeout(() => map.invalidateSize(), 150);
+}
+});
+});
 </script>
 </body>
 </html>
