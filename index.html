@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<title>Juego de Geografía</title>
+<title>Geography Game</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <!-- Leaflet (mapa) -->
@@ -245,50 +245,50 @@ height: 260px;
 <body>
 <div class="app-container">
 <header>
-<h1>Juego de Geografía: Banderas, Capitales y Mapa</h1>
-<p>Aprende países, capitales y dónde están en el mapamundi.</p>
+<h1>Geography Game: Flags, Capitals & Map</h1>
+<p>Learn countries, capitals and where they are on the world map.</p>
 <div class="mode-selector">
-<span class="badge-level">Modo de juego:</span>
+<span class="badge-level">Game mode:</span>
 <label>
 <input type="radio" name="mode" value="write" checked />
-Escribir respuestas
+Write answers
 </label>
 <label>
 <input type="radio" name="mode" value="options" />
-Opciones tipo test
+Multiple choice
 </label>
 </div>
 <div id="loading-message" class="message" style="margin-top:8px;">
-Cargando todos los países y banderas del mundo...
+Loading countries and flags...
 </div>
 </header>
 
-<!-- Nivel 1: Bandera -> País -->
+<!-- Level 1: Flag -> Country -->
 <section class="card" id="level1" style="display:none;">
 <div>
-<span class="badge-level">Nivel 1</span>
-<h2>Adivina el país por la bandera</h2>
-<small>Si escribes, tendrás autocompletado de países.</small>
+<span class="badge-level">Level 1</span>
+<h2>Guess the country from the flag</h2>
+<small>When writing, you get autocomplete suggestions.</small>
 </div>
 <div class="flag-container">
-<img id="flag-img" src="" alt="Bandera del país" />
+<img id="flag-img" src="" alt="Country flag" />
 </div>
 
-<!-- Modo escritura -->
+<!-- Writing mode -->
 <div id="country-write-area">
 <div class="input-row">
 <input
 type="text"
 id="country-input"
-placeholder="Escribe el país..."
+placeholder="Type the country..."
 list="country-suggestions"
 />
 <datalist id="country-suggestions"></datalist>
-<button id="check-country-btn">Comprobar país</button>
+<button id="check-country-btn">Check country</button>
 </div>
 </div>
 
-<!-- Modo opciones -->
+<!-- Options mode -->
 <div id="country-options-area" style="display:none;">
 <div class="options-grid" id="country-options-grid"></div>
 </div>
@@ -296,52 +296,52 @@ list="country-suggestions"
 <div id="country-message" class="message" style="display:none;"></div>
 </section>
 
-<!-- Nivel 2: País -> Capital -->
+<!-- Level 2: Country -> Capital -->
 <section class="card" id="level2" style="display:none;">
 <div>
-<span class="badge-level">Nivel 2</span>
-<h2>Adivina la capital de <span id="country-name-capital"></span></h2>
+<span class="badge-level">Level 2</span>
+<h2>Guess the capital of <span id="country-name-capital"></span></h2>
 <small>
-En modo escritura solo tienes <strong>2 intentos</strong>. Luego se muestra la respuesta correcta.
+In writing mode you only have <strong>2 attempts</strong>. Then the correct answer is shown.
 </small>
 </div>
 
-<!-- Modo escritura -->
+<!-- Writing mode -->
 <div id="capital-write-area">
 <div class="input-row">
 <input
 type="text"
 id="capital-input"
-placeholder="Escribe la capital..."
+placeholder="Type the capital..."
 list="capital-suggestions"
 />
 <datalist id="capital-suggestions"></datalist>
-<button id="check-capital-btn">Comprobar capital</button>
+<button id="check-capital-btn">Check capital</button>
 </div>
 <div class="attempts" id="capital-attempts-info"></div>
 </div>
 
-<!-- Modo opciones -->
+<!-- Options mode -->
 <div id="capital-options-area" style="display:none;">
 <div class="options-grid" id="capital-options-grid"></div>
 </div>
 
 <div id="capital-message" class="message" style="display:none;"></div>
-<button id="skip-to-map-btn" class="secondary" style="display:none;">Continuar al mapa</button>
+<button id="skip-to-map-btn" class="secondary" style="display:none;">Continue to map</button>
 </section>
 
-<!-- Nivel 3: Mapa -->
+<!-- Level 3: Map -->
 <section class="card" id="level3" style="display:none;">
 <div>
-<span class="badge-level">Nivel 3</span>
-<h2>Encuentra <span id="country-name-map"></span> en el mapa</h2>
+<span class="badge-level">Level 3</span>
+<h2>Find <span id="country-name-map"></span> on the map</h2>
 <small>
-Tienes <strong>3 intentos</strong>. Haz zoom y toca sobre el país.
+You have <strong>3 attempts</strong>. Zoom and tap on the country.
 </small>
 </div>
 <div class="map-info">
-Haz clic en el mapa. Si fallas, podrás intentarlo de nuevo hasta 3 veces. Después se mostrará
-la ubicación correcta con un recuadro que incluye bandera, país y capital.
+Click on the map. If you miss, you can try again up to 3 times. Then the correct location is shown
+with a box including flag, country and capital.
 </div>
 <div id="map"></div>
 <div class="attempts" id="map-attempts-info"></div>
@@ -350,20 +350,208 @@ la ubicación correcta con un recuadro que incluye bandera, país y capital.
 
 <div class="footer-row">
 <div class="attempts">
-Ronda actual: <span id="round-number">1</span>
+Current round: <span id="round-number">1</span>
 </div>
-<button id="next-round-btn" style="display:none;">Siguiente país</button>
+<button id="next-round-btn" style="display:none;">Next country</button>
 </div>
 </div>
 
 <script>
-// ========= CARGA DE TODOS LOS PAÍSES =========
-// Usamos una base de datos pública con:
-// name, alpha2, capital, geo.lat, geo.long
-const COUNTRIES_URL =
-"https://raw.githubusercontent.com/Khodour/countries.json/main/countries.json";
+// ========= COUNTRIES DATA =========
+// Name and capital in English, iso2 for flags, lat/lng = approximate centre of the country.
+// Includes UN countries plus many territories.
+const COUNTRIES = [
+{ name: "Afghanistan", capital: "Kabul", iso2: "af", lat: 33.0, lng: 65.0, size: "medium" },
+{ name: "Albania", capital: "Tirana", iso2: "al", lat: 41.3, lng: 20.0, size: "small" },
+{ name: "Algeria", capital: "Algiers", iso2: "dz", lat: 28.0, lng: 3.0, size: "big" },
+{ name: "Andorra", capital: "Andorra la Vella", iso2: "ad", lat: 42.5, lng: 1.5, size: "tiny" },
+{ name: "Angola", capital: "Luanda", iso2: "ao", lat: -12.0, lng: 18.0, size: "big" },
+{ name: "Argentina", capital: "Buenos Aires", iso2: "ar", lat: -34.0, lng: -64.0, size: "big" },
+{ name: "Armenia", capital: "Yerevan", iso2: "am", lat: 40.3, lng: 44.9, size: "small" },
+{ name: "Australia", capital: "Canberra", iso2: "au", lat: -25.0, lng: 133.0, size: "big" },
+{ name: "Austria", capital: "Vienna", iso2: "at", lat: 47.5, lng: 14.5, size: "small" },
+{ name: "Azerbaijan", capital: "Baku", iso2: "az", lat: 40.5, lng: 47.5, size: "small" },
+{ name: "Bahamas", capital: "Nassau", iso2: "bs", lat: 25.0, lng: -77.4, size: "small" },
+{ name: "Bahrain", capital: "Manama", iso2: "bh", lat: 26.0, lng: 50.5, size: "tiny" },
+{ name: "Bangladesh", capital: "Dhaka", iso2: "bd", lat: 24.0, lng: 90.0, size: "medium" },
+{ name: "Belarus", capital: "Minsk", iso2: "by", lat: 53.0, lng: 28.0, size: "medium" },
+{ name: "Belgium", capital: "Brussels", iso2: "be", lat: 50.8, lng: 4.5, size: "small" },
+{ name: "Belize", capital: "Belmopan", iso2: "bz", lat: 17.2, lng: -88.7, size: "small" },
+{ name: "Benin", capital: "Porto-Novo", iso2: "bj", lat: 9.5, lng: 2.3, size: "small" },
+{ name: "Bhutan", capital: "Thimphu", iso2: "bt", lat: 27.5, lng: 90.5, size: "small" },
+{ name: "Bolivia", capital: "Sucre", iso2: "bo", lat: -17.0, lng: -65.0, size: "big" },
+{ name: "Bosnia and Herzegovina", capital: "Sarajevo", iso2: "ba", lat: 44.0, lng: 18.0, size: "small" },
+{ name: "Botswana", capital: "Gaborone", iso2: "bw", lat: -22.0, lng: 24.0, size: "medium" },
+{ name: "Brazil", capital: "Brasilia", iso2: "br", lat: -10.0, lng: -55.0, size: "big" },
+{ name: "Brunei", capital: "Bandar Seri Begawan", iso2: "bn", lat: 4.5, lng: 114.7, size: "tiny" },
+{ name: "Bulgaria", capital: "Sofia", iso2: "bg", lat: 42.7, lng: 25.5, size: "small" },
+{ name: "Burkina Faso", capital: "Ouagadougou", iso2: "bf", lat: 12.4, lng: -1.6, size: "medium" },
+{ name: "Burundi", capital: "Gitega", iso2: "bi", lat: -3.4, lng: 29.9, size: "small" },
+{ name: "Cabo Verde", capital: "Praia", iso2: "cv", lat: 15.1, lng: -23.6, size: "tiny" },
+{ name: "Cambodia", capital: "Phnom Penh", iso2: "kh", lat: 12.7, lng: 104.9, size: "small" },
+{ name: "Cameroon", capital: "Yaounde", iso2: "cm", lat: 5.7, lng: 12.7, size: "medium" },
+{ name: "Canada", capital: "Ottawa", iso2: "ca", lat: 56.0, lng: -96.0, size: "big" },
+{ name: "Central African Republic", capital: "Bangui", iso2: "cf", lat: 6.6, lng: 20.5, size: "medium" },
+{ name: "Chad", capital: "N'Djamena", iso2: "td", lat: 15.0, lng: 19.0, size: "big" },
+{ name: "Chile", capital: "Santiago", iso2: "cl", lat: -30.0, lng: -71.0, size: "big" },
+{ name: "China", capital: "Beijing", iso2: "cn", lat: 35.0, lng: 103.0, size: "big" },
+{ name: "Colombia", capital: "Bogota", iso2: "co", lat: 4.0, lng: -73.0, size: "big" },
+{ name: "Comoros", capital: "Moroni", iso2: "km", lat: -11.7, lng: 43.3, size: "tiny" },
+{ name: "Congo", capital: "Brazzaville", iso2: "cg", lat: -0.7, lng: 15.8, size: "medium" },
+{ name: "Costa Rica", capital: "San Jose", iso2: "cr", lat: 10.0, lng: -84.0, size: "small" },
+{ name: "Croatia", capital: "Zagreb", iso2: "hr", lat: 45.1, lng: 16.4, size: "small" },
+{ name: "Cuba", capital: "Havana", iso2: "cu", lat: 21.5, lng: -79.5, size: "small" },
+{ name: "Cyprus", capital: "Nicosia", iso2: "cy", lat: 35.0, lng: 33.0, size: "tiny" },
+{ name: "Czech Republic", capital: "Prague", iso2: "cz", lat: 49.8, lng: 15.5, size: "small" },
+{ name: "Democratic Republic of the Congo", capital: "Kinshasa", iso2: "cd", lat: -3.0, lng: 23.0, size: "big" },
+{ name: "Denmark", capital: "Copenhagen", iso2: "dk", lat: 56.0, lng: 10.0, size: "small" },
+{ name: "Djibouti", capital: "Djibouti", iso2: "dj", lat: 11.8, lng: 42.6, size: "tiny" },
+{ name: "Dominican Republic", capital: "Santo Domingo", iso2: "do", lat: 19.0, lng: -70.7, size: "small" },
+{ name: "Dominica", capital: "Roseau", iso2: "dm", lat: 15.4, lng: -61.4, size: "tiny" },
+{ name: "Ecuador", capital: "Quito", iso2: "ec", lat: -1.5, lng: -78.0, size: "medium" },
+{ name: "Egypt", capital: "Cairo", iso2: "eg", lat: 26.0, lng: 30.0, size: "big" },
+{ name: "El Salvador", capital: "San Salvador", iso2: "sv", lat: 13.7, lng: -88.9, size: "small" },
+{ name: "Equatorial Guinea", capital: "Malabo", iso2: "gq", lat: 1.6, lng: 10.5, size: "tiny" },
+{ name: "Eritrea", capital: "Asmara", iso2: "er", lat: 15.0, lng: 39.0, size: "medium" },
+{ name: "Estonia", capital: "Tallinn", iso2: "ee", lat: 58.7, lng: 25.0, size: "small" },
+{ name: "Eswatini", capital: "Mbabane", iso2: "sz", lat: -26.5, lng: 31.5, size: "tiny" },
+{ name: "Ethiopia", capital: "Addis Ababa", iso2: "et", lat: 9.0, lng: 40.0, size: "big" },
+{ name: "Fiji", capital: "Suva", iso2: "fj", lat: -17.8, lng: 178.0, size: "small" },
+{ name: "Finland", capital: "Helsinki", iso2: "fi", lat: 64.0, lng: 26.0, size: "big" },
+{ name: "France", capital: "Paris", iso2: "fr", lat: 46.0, lng: 2.0, size: "medium" },
+{ name: "Gabon", capital: "Libreville", iso2: "ga", lat: -0.6, lng: 11.8, size: "medium" },
+{ name: "Gambia", capital: "Banjul", iso2: "gm", lat: 13.4, lng: -16.0, size: "tiny" },
+{ name: "Georgia", capital: "Tbilisi", iso2: "ge", lat: 42.0, lng: 43.5, size: "small" },
+{ name: "Germany", capital: "Berlin", iso2: "de", lat: 51.0, lng: 10.0, size: "medium" },
+{ name: "Ghana", capital: "Accra", iso2: "gh", lat: 7.9, lng: -1.0, size: "medium" },
+{ name: "Greece", capital: "Athens", iso2: "gr", lat: 39.0, lng: 22.0, size: "small" },
+{ name: "Guatemala", capital: "Guatemala City", iso2: "gt", lat: 15.7, lng: -90.2, size: "small" },
+{ name: "Guinea", capital: "Conakry", iso2: "gn", lat: 10.0, lng: -10.0, size: "medium" },
+{ name: "Guinea-Bissau", capital: "Bissau", iso2: "gw", lat: 12.0, lng: -15.0, size: "small" },
+{ name: "Guyana", capital: "Georgetown", iso2: "gy", lat: 5.0, lng: -59.0, size: "medium" },
+{ name: "Haiti", capital: "Port-au-Prince", iso2: "ht", lat: 19.0, lng: -72.7, size: "small" },
+{ name: "Honduras", capital: "Tegucigalpa", iso2: "hn", lat: 14.5, lng: -86.5, size: "small" },
+{ name: "Hungary", capital: "Budapest", iso2: "hu", lat: 47.0, lng: 19.5, size: "small" },
+{ name: "Iceland", capital: "Reykjavik", iso2: "is", lat: 64.9, lng: -18.6, size: "small" },
+{ name: "India", capital: "New Delhi", iso2: "in", lat: 22.0, lng: 79.0, size: "big" },
+{ name: "Indonesia", capital: "Jakarta", iso2: "id", lat: -2.0, lng: 118.0, size: "big" },
+{ name: "Iran", capital: "Tehran", iso2: "ir", lat: 32.0, lng: 53.0, size: "big" },
+{ name: "Iraq", capital: "Baghdad", iso2: "iq", lat: 33.0, lng: 44.0, size: "medium" },
+{ name: "Ireland", capital: "Dublin", iso2: "ie", lat: 53.0, lng: -8.0, size: "small" },
+{ name: "Israel", capital: "Jerusalem", iso2: "il", lat: 31.5, lng: 35.0, size: "tiny" },
+{ name: "Italy", capital: "Rome", iso2: "it", lat: 42.8, lng: 12.8, size: "medium" },
+{ name: "Jamaica", capital: "Kingston", iso2: "jm", lat: 18.1, lng: -77.3, size: "small" },
+{ name: "Japan", capital: "Tokyo", iso2: "jp", lat: 36.0, lng: 138.0, size: "medium" },
+{ name: "Jordan", capital: "Amman", iso2: "jo", lat: 31.2, lng: 36.5, size: "small" },
+{ name: "Kazakhstan", capital: "Astana", iso2: "kz", lat: 48.0, lng: 68.0, size: "big" },
+{ name: "Kenya", capital: "Nairobi", iso2: "ke", lat: 0.0, lng: 37.9, size: "medium" },
+{ name: "Kiribati", capital: "Tarawa", iso2: "ki", lat: 1.9, lng: 173.0, size: "tiny" },
+{ name: "Kuwait", capital: "Kuwait City", iso2: "kw", lat: 29.3, lng: 47.5, size: "tiny" },
+{ name: "Kyrgyzstan", capital: "Bishkek", iso2: "kg", lat: 41.2, lng: 74.7, size: "medium" },
+{ name: "Laos", capital: "Vientiane", iso2: "la", lat: 18.0, lng: 105.0, size: "medium" },
+{ name: "Latvia", capital: "Riga", iso2: "lv", lat: 56.8, lng: 24.6, size: "small" },
+{ name: "Lebanon", capital: "Beirut", iso2: "lb", lat: 33.9, lng: 35.9, size: "tiny" },
+{ name: "Lesotho", capital: "Maseru", iso2: "ls", lat: -29.3, lng: 28.3, size: "small" },
+{ name: "Liberia", capital: "Monrovia", iso2: "lr", lat: 6.5, lng: -9.3, size: "small" },
+{ name: "Libya", capital: "Tripoli", iso2: "ly", lat: 27.0, lng: 17.0, size: "big" },
+{ name: "Liechtenstein", capital: "Vaduz", iso2: "li", lat: 47.1, lng: 9.6, size: "tiny" },
+{ name: "Lithuania", capital: "Vilnius", iso2: "lt", lat: 55.2, lng: 23.9, size: "small" },
+{ name: "Luxembourg", capital: "Luxembourg", iso2: "lu", lat: 49.8, lng: 6.1, size: "tiny" },
+{ name: "Madagascar", capital: "Antananarivo", iso2: "mg", lat: -20.0, lng: 47.0, size: "medium" },
+{ name: "Malawi", capital: "Lilongwe", iso2: "mw", lat: -13.5, lng: 34.0, size: "small" },
+{ name: "Malaysia", capital: "Kuala Lumpur", iso2: "my", lat: 4.5, lng: 102.0, size: "medium" },
+{ name: "Maldives", capital: "Male", iso2: "mv", lat: 3.2, lng: 73.0, size: "tiny" },
+{ name: "Mali", capital: "Bamako", iso2: "ml", lat: 17.0, lng: -3.0, size: "big" },
+{ name: "Malta", capital: "Valletta", iso2: "mt", lat: 35.9, lng: 14.4, size: "tiny" },
+{ name: "Mauritania", capital: "Nouakchott", iso2: "mr", lat: 20.0, lng: -10.0, size: "big" },
+{ name: "Mauritius", capital: "Port Louis", iso2: "mu", lat: -20.2, lng: 57.5, size: "tiny" },
+{ name: "Mexico", capital: "Mexico City", iso2: "mx", lat: 23.0, lng: -102.0, size: "big" },
+{ name: "Micronesia", capital: "Palikir", iso2: "fm", lat: 6.9, lng: 158.2, size: "tiny" },
+{ name: "Moldova", capital: "Chisinau", iso2: "md", lat: 47.3, lng: 28.9, size: "small" },
+{ name: "Monaco", capital: "Monaco", iso2: "mc", lat: 43.7, lng: 7.4, size: "tiny" },
+{ name: "Mongolia", capital: "Ulaanbaatar", iso2: "mn", lat: 46.8, lng: 103.8, size: "big" },
+{ name: "Montenegro", capital: "Podgorica", iso2: "me", lat: 42.8, lng: 19.2, size: "tiny" },
+{ name: "Morocco", capital: "Rabat", iso2: "ma", lat: 31.8, lng: -7.0, size: "medium" },
+{ name: "Mozambique", capital: "Maputo", iso2: "mz", lat: -18.5, lng: 35.0, size: "big" },
+{ name: "Myanmar", capital: "Naypyidaw", iso2: "mm", lat: 21.0, lng: 96.0, size: "big" },
+{ name: "Namibia", capital: "Windhoek", iso2: "na", lat: -22.0, lng: 17.0, size: "big" },
+{ name: "Nauru", capital: "Yaren (de facto)", iso2: "nr", lat: -0.5, lng: 166.9, size: "tiny" },
+{ name: "Nepal", capital: "Kathmandu", iso2: "np", lat: 28.2, lng: 84.0, size: "small" },
+{ name: "Netherlands", capital: "Amsterdam", iso2: "nl", lat: 52.3, lng: 5.3, size: "small" },
+{ name: "New Zealand", capital: "Wellington", iso2: "nz", lat: -41.0, lng: 174.0, size: "medium" },
+{ name: "Nicaragua", capital: "Managua", iso2: "ni", lat: 12.8, lng: -85.0, size: "small" },
+{ name: "Niger", capital: "Niamey", iso2: "ne", lat: 17.6, lng: 9.6, size: "big" },
+{ name: "Nigeria", capital: "Abuja", iso2: "ng", lat: 9.1, lng: 8.7, size: "big" },
+{ name: "North Korea", capital: "Pyongyang", iso2: "kp", lat: 40.0, lng: 127.0, size: "medium" },
+{ name: "North Macedonia", capital: "Skopje", iso2: "mk", lat: 41.6, lng: 21.7, size: "small" },
+{ name: "Norway", capital: "Oslo", iso2: "no", lat: 62.0, lng: 10.0, size: "big" },
+{ name: "Oman", capital: "Muscat", iso2: "om", lat: 20.7, lng: 56.1, size: "medium" },
+{ name: "Pakistan", capital: "Islamabad", iso2: "pk", lat: 30.0, lng: 70.0, size: "big" },
+{ name: "Palau", capital: "Ngerulmud", iso2: "pw", lat: 7.5, lng: 134.5, size: "tiny" },
+{ name: "Panama", capital: "Panama City", iso2: "pa", lat: 8.5, lng: -80.0, size: "small" },
+{ name: "Papua New Guinea", capital: "Port Moresby", iso2: "pg", lat: -6.3, lng: 145.0, size: "big" },
+{ name: "Paraguay", capital: "Asuncion", iso2: "py", lat: -23.3, lng: -58.0, size: "medium" },
+{ name: "Peru", capital: "Lima", iso2: "pe", lat: -9.0, lng: -75.0, size: "big" },
+{ name: "Philippines", capital: "Manila", iso2: "ph", lat: 13.0, lng: 122.0, size: "big" },
+{ name: "Poland", capital: "Warsaw", iso2: "pl", lat: 52.0, lng: 19.0, size: "medium" },
+{ name: "Portugal", capital: "Lisbon", iso2: "pt", lat: 39.5, lng: -8.0, size: "small" },
+{ name: "Qatar", capital: "Doha", iso2: "qa", lat: 25.3, lng: 51.2, size: "tiny" },
+{ name: "Romania", capital: "Bucharest", iso2: "ro", lat: 45.8, lng: 24.9, size: "medium" },
+{ name: "Russia", capital: "Moscow", iso2: "ru", lat: 61.0, lng: 105.0, size: "huge" },
+{ name: "Rwanda", capital: "Kigali", iso2: "rw", lat: -1.9, lng: 29.9, size: "small" },
+{ name: "Saint Kitts and Nevis", capital: "Basseterre", iso2: "kn", lat: 17.3, lng: -62.7, size: "tiny" },
+{ name: "Saint Lucia", capital: "Castries", iso2: "lc", lat: 13.9, lng: -61.0, size: "tiny" },
+{ name: "Saint Vincent and the Grenadines", capital: "Kingstown", iso2: "vc", lat: 13.2, lng: -61.2, size: "tiny" },
+{ name: "Samoa", capital: "Apia", iso2: "ws", lat: -13.8, lng: -172.1, size: "tiny" },
+{ name: "San Marino", capital: "San Marino", iso2: "sm", lat: 43.9, lng: 12.5, size: "tiny" },
+{ name: "Sao Tome and Principe", capital: "Sao Tome", iso2: "st", lat: 0.2, lng: 6.7, size: "tiny" },
+{ name: "Saudi Arabia", capital: "Riyadh", iso2: "sa", lat: 24.0, lng: 45.0, size: "big" },
+{ name: "Senegal", capital: "Dakar", iso2: "sn", lat: 14.5, lng: -14.5, size: "medium" },
+{ name: "Serbia", capital: "Belgrade", iso2: "rs", lat: 44.0, lng: 20.8, size: "small" },
+{ name: "Seychelles", capital: "Victoria", iso2: "sc", lat: -4.6, lng: 55.5, size: "tiny" },
+{ name: "Sierra Leone", capital: "Freetown", iso2: "sl", lat: 8.5, lng: -11.8, size: "small" },
+{ name: "Singapore", capital: "Singapore", iso2: "sg", lat: 1.3, lng: 103.8, size: "tiny" },
+{ name: "Slovakia", capital: "Bratislava", iso2: "sk", lat: 48.7, lng: 19.5, size: "small" },
+{ name: "Slovenia", capital: "Ljubljana", iso2: "si", lat: 46.1, lng: 14.8, size: "small" },
+{ name: "Solomon Islands", capital: "Honiara", iso2: "sb", lat: -9.3, lng: 160.0, size: "small" },
+{ name: "Somalia", capital: "Mogadishu", iso2: "so", lat: 6.0, lng: 46.0, size: "big" },
+{ name: "South Africa", capital: "Pretoria", iso2: "za", lat: -29.0, lng: 24.0, size: "big" },
+{ name: "South Korea", capital: "Seoul", iso2: "kr", lat: 36.0, lng: 128.0, size: "medium" },
+{ name: "South Sudan", capital: "Juba", iso2: "ss", lat: 7.3, lng: 30.0, size: "medium" },
+{ name: "Spain", capital: "Madrid", iso2: "es", lat: 40.0, lng: -4.0, size: "medium" },
+{ name: "Sri Lanka", capital: "Sri Jayawardenepura Kotte", iso2: "lk", lat: 7.8, lng: 80.7, size: "small" },
+{ name: "Sudan", capital: "Khartoum", iso2: "sd", lat: 15.6, lng: 29.5, size: "big" },
+{ name: "Suriname", capital: "Paramaribo", iso2: "sr", lat: 4.0, lng: -56.0, size: "small" },
+{ name: "Sweden", capital: "Stockholm", iso2: "se", lat: 63.0, lng: 16.0, size: "big" },
+{ name: "Switzerland", capital: "Bern", iso2: "ch", lat: 46.8, lng: 8.3, size: "small" },
+{ name: "Syria", capital: "Damascus", iso2: "sy", lat: 35.0, lng: 38.5, size: "medium" },
+{ name: "Taiwan", capital: "Taipei", iso2: "tw", lat: 23.7, lng: 121.0, size: "small" },
+{ name: "Tajikistan", capital: "Dushanbe", iso2: "tj", lat: 38.8, lng: 71.0, size: "medium" },
+{ name: "Tanzania", capital: "Dodoma", iso2: "tz", lat: -6.0, lng: 35.0, size: "big" },
+{ name: "Thailand", capital: "Bangkok", iso2: "th", lat: 15.0, lng: 101.0, size: "medium" },
+{ name: "Timor-Leste", capital: "Dili", iso2: "tl", lat: -8.8, lng: 125.7, size: "small" },
+{ name: "Togo", capital: "Lome", iso2: "tg", lat: 8.6, lng: 0.8, size: "small" },
+{ name: "Tonga", capital: "Nuku'alofa", iso2: "to", lat: -21.2, lng: -175.2, size: "tiny" },
+{ name: "Trinidad and Tobago", capital: "Port of Spain", iso2: "tt", lat: 10.5, lng: -61.2, size: "tiny" },
+{ name: "Tunisia", capital: "Tunis", iso2: "tn", lat: 34.0, lng: 9.0, size: "small" },
+{ name: "Turkey", capital: "Ankara", iso2: "tr", lat: 39.0, lng: 35.0, size: "big" },
+{ name: "Turkmenistan", capital: "Ashgabat", iso2: "tm", lat: 39.0, lng: 59.0, size: "big" },
+{ name: "Uganda", capital: "Kampala", iso2: "ug", lat: 1.5, lng: 32.5, size: "medium" },
+{ name: "Ukraine", capital: "Kyiv", iso2: "ua", lat: 49.0, lng: 32.0, size: "big" },
+{ name: "United Arab Emirates", capital: "Abu Dhabi", iso2: "ae", lat: 24.0, lng: 54.0, size: "small" },
+{ name: "United Kingdom", capital: "London", iso2: "gb", lat: 55.0, lng: -3.0, size: "medium" },
+{ name: "United States", capital: "Washington, D.C.", iso2: "us", lat: 39.0, lng: -98.0, size: "huge" },
+{ name: "Uruguay", capital: "Montevideo", iso2: "uy", lat: -32.5, lng: -56.0, size: "small" },
+{ name: "Uzbekistan", capital: "Tashkent", iso2: "uz", lat: 41.0, lng: 64.0, size: "big" },
+{ name: "Vanuatu", capital: "Port Vila", iso2: "vu", lat: -16.0, lng: 167.0, size: "small" },
+{ name: "Venezuela", capital: "Caracas", iso2: "ve", lat: 7.0, lng: -66.0, size: "big" },
+{ name: "Vietnam", capital: "Hanoi", iso2: "vn", lat: 16.0, lng: 106.0, size: "medium" },
+{ name: "Yemen", capital: "Sana'a", iso2: "ye", lat: 15.5, lng: 48.0, size: "medium" },
+{ name: "Zambia", capital: "Lusaka", iso2: "zm", lat: -13.0, lng: 27.8, size: "medium" },
+{ name: "Zimbabwe", capital: "Harare", iso2: "zw", lat: -19.0, lng: 29.0, size: "medium" }
+];
 
-let COUNTRIES = [];
+// ========= GAME STATE =========
 let currentCountry = null;
 let roundNumber = 1;
 let capitalAttempts = 0;
@@ -371,9 +559,9 @@ let mapAttempts = 0;
 
 let map;
 let mapMarkers = [];
-let countriesLoaded = false;
+let countriesLoaded = true; // already loaded (we have the array inline)
 
-// ========= UTILIDADES =========
+// ========= UTILITIES =========
 function normalizeText(text) {
 return text
 .toString()
@@ -389,7 +577,6 @@ return checked ? checked.value : "write";
 }
 
 function randomCountry() {
-if (!COUNTRIES.length) return null;
 const idx = Math.floor(Math.random() * COUNTRIES.length);
 return COUNTRIES[idx];
 }
@@ -400,7 +587,6 @@ const used = new Set([correctItem[key]]);
 
 while (options.length < 4 && options.length < COUNTRIES.length) {
 const candidate = randomCountry();
-if (!candidate) break;
 const value = candidate[key];
 if (value && !used.has(value)) {
 used.add(value);
@@ -408,7 +594,7 @@ options.push(candidate);
 }
 }
 
-// mezclar
+// shuffle
 for (let i = options.length - 1; i > 0; i--) {
 const j = Math.floor(Math.random() * (i + 1));
 [options[i], options[j]] = [options[j], options[i]];
@@ -447,14 +633,26 @@ datalistEl.appendChild(opt);
 });
 }
 
-// ========= NIVEL 1: PAÍS POR BANDERA =========
+// Size-based distance threshold (km)
+function distanceThresholdFor(country) {
+switch (country.size) {
+case "tiny": return 250;
+case "small": return 350;
+case "medium": return 450;
+case "big": return 650;
+case "huge": return 900;
+default: return 450;
+}
+}
+
+// ========= LEVEL 1: FLAG -> COUNTRY =========
 function loadLevel1() {
 if (!currentCountry) return;
 
 const flagImg = document.getElementById("flag-img");
 const flagUrl = `https://flagcdn.com/w320/${currentCountry.iso2}.png`;
 flagImg.src = flagUrl;
-flagImg.alt = `Bandera de ${currentCountry.name}`;
+flagImg.alt = `Flag of ${currentCountry.name}`;
 
 document.getElementById("country-input").value = "";
 document.getElementById("country-options-grid").innerHTML = "";
@@ -494,10 +692,10 @@ const answer = normalizeText(input);
 const correct = normalizeText(currentCountry.name);
 
 if (answer === correct) {
-setMessage("country-message", "¡Correcto! Has acertado el país.", "success");
+setMessage("country-message", "Correct! You guessed the country.", "success");
 goToLevel2();
 } else {
-setMessage("country-message", "Incorrecto. Sigue intentando.", "error");
+setMessage("country-message", "Wrong. Keep trying.", "error");
 }
 }
 
@@ -509,15 +707,15 @@ buttons.forEach(btn => (btn.disabled = false));
 if (correct) {
 buttonEl.classList.remove("wrong");
 buttonEl.classList.add("correct");
-setMessage("country-message", "¡Correcto! Has acertado el país.", "success");
+setMessage("country-message", "Correct! You guessed the country.", "success");
 goToLevel2();
 } else {
 buttonEl.classList.add("wrong");
-setMessage("country-message", "Incorrecto. Prueba otra opción.", "error");
+setMessage("country-message", "Wrong. Try another option.", "error");
 }
 }
 
-// ========= NIVEL 2: CAPITAL =========
+// ========= LEVEL 2: CAPITAL =========
 function loadLevel2() {
 document.getElementById("level2").style.display = "block";
 document.getElementById("country-name-capital").textContent = currentCountry.name;
@@ -526,7 +724,7 @@ document.getElementById("capital-message").style.display = "none";
 document.getElementById("skip-to-map-btn").style.display = "none";
 capitalAttempts = 0;
 document.getElementById("capital-attempts-info").textContent =
-"Intentos usados: 0 de 2";
+"Attempts used: 0 of 2";
 
 const mode = getMode();
 if (mode === "write") {
@@ -558,21 +756,21 @@ if (!input.trim()) return;
 
 capitalAttempts++;
 document.getElementById("capital-attempts-info").textContent =
-`Intentos usados: ${capitalAttempts} de 2`;
+`Attempts used: ${capitalAttempts} of 2`;
 
 const answer = normalizeText(input);
 const correct = normalizeText(currentCountry.capital);
 
 if (answer === correct) {
-setMessage("capital-message", "¡Correcto! Has acertado la capital.", "success");
+setMessage("capital-message", "Correct! You guessed the capital.", "success");
 goToLevel3();
 } else {
 if (capitalAttempts < 2) {
-setMessage("capital-message", "Incorrecto. Te queda otro intento.", "error");
+setMessage("capital-message", "Wrong. You have one more try.", "error");
 } else {
 setMessage(
 "capital-message",
-`Incorrecto. La capital correcta es: ${currentCountry.capital}.`,
+`Wrong. The correct capital is: ${currentCountry.capital}.`,
 "error"
 );
 document.getElementById("skip-to-map-btn").style.display = "inline-block";
@@ -586,25 +784,24 @@ const correct = chosenCountry.capital === currentCountry.capital;
 if (correct) {
 buttonEl.classList.remove("wrong");
 buttonEl.classList.add("correct");
-setMessage("capital-message", "¡Correcto! Has acertado la capital.", "success");
+setMessage("capital-message", "Correct! You guessed the capital.", "success");
 goToLevel3();
 } else {
 buttonEl.classList.add("wrong");
-setMessage("capital-message", "Incorrecto. Prueba otra capital.", "error");
+setMessage("capital-message", "Wrong. Try another capital.", "error");
 }
 }
 
-// ========= NIVEL 3: MAPA =========
+// ========= LEVEL 3: MAP =========
 function initMap() {
 map = L.map("map").setView([20, 0], 2);
 
-// Mapa político por colores (Carto Voyager)
+// Political coloured map (Carto Voyager)
 L.tileLayer(
 "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
 {
 maxZoom: 6,
-attribution:
-"&copy; OpenStreetMap contributors &copy; CARTO"
+attribution: "&copy; OpenStreetMap contributors &copy; CARTO"
 }
 ).addTo(map);
 
@@ -620,7 +817,7 @@ function onMapClick(e) {
 if (!currentCountry) return;
 
 if (mapAttempts >= 3) {
-setMessage("map-message", "Ya no tienes más intentos. Pulsa Siguiente país.", "error");
+setMessage("map-message", "No attempts left. Press Next country.", "error");
 return;
 }
 
@@ -635,7 +832,7 @@ currentCountry.lat,
 currentCountry.lng
 );
 
-const thresholdKm = 500; // distancia aceptable
+const thresholdKm = distanceThresholdFor(currentCountry);
 
 if (distanceKm <= thresholdKm) {
 showCorrectLocation(true);
@@ -643,15 +840,15 @@ showCorrectLocation(true);
 if (mapAttempts < 3) {
 setMessage(
 "map-message",
-`Incorrecto. Estás a unos ${Math.round(
+`Wrong. You are about ${Math.round(
 distanceKm
-)} km. Te quedan ${3 - mapAttempts} intentos.`,
+)} km away. Remaining attempts: ${3 - mapAttempts}.`,
 "error"
 );
 } else {
 setMessage(
 "map-message",
-`Has agotado los intentos. Te mostramos la ubicación correcta.`,
+`No attempts left. Showing the correct location.`,
 "error"
 );
 showCorrectLocation(false);
@@ -659,7 +856,7 @@ showCorrectLocation(false);
 }
 
 document.getElementById("map-attempts-info").textContent =
-`Intentos usados: ${mapAttempts} de 3`;
+`Attempts used: ${mapAttempts} of 3`;
 }
 
 function haversineDistance(lat1, lon1, lat2, lon2) {
@@ -686,7 +883,7 @@ const flagUrl = `https://flagcdn.com/w80/${currentCountry.iso2}.png`;
 const popupHtml = `
 <div style="font-size:0.9rem;">
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-<img src="${flagUrl}" alt="Bandera" style="border-radius:4px;border:1px solid #e5e7eb;" />
+<img src="${flagUrl}" alt="Flag" style="border-radius:4px;border:1px solid #e5e7eb;" />
 <div>
 <strong>${currentCountry.name}</strong><br />
 Capital: ${currentCountry.capital}
@@ -699,7 +896,7 @@ map.setView([currentCountry.lat, currentCountry.lng], 4);
 
 setMessage(
 "map-message",
-fromCorrectClick ? "¡Correcto! Has localizado el país." : "Aquí está el país correcto.",
+fromCorrectClick ? "Correct! You found the country." : "Here is the correct country.",
 fromCorrectClick ? "success" : "info"
 );
 
@@ -713,28 +910,19 @@ document.getElementById("map-message").style.display = "none";
 document.getElementById("next-round-btn").style.display = "none";
 mapAttempts = 0;
 document.getElementById("map-attempts-info").textContent =
-"Intentos usados: 0 de 3";
+"Attempts used: 0 of 3";
 
 clearMapMarkers();
 map.setView([20, 0], 2);
 
-// Arregla mapa gris (recalcula tamaño al mostrarse la tarjeta)
+// Fix grey map when container size changes
 setTimeout(() => {
 map.invalidateSize();
 }, 150);
 }
 
-// ========= FLUJO GENERAL =========
+// ========= FLOW =========
 function startNewRound() {
-if (!COUNTRIES.length) {
-setMessage(
-"country-message",
-"No se han podido cargar los países. Revisa tu conexión a Internet y recarga la página.",
-"error"
-);
-return;
-}
-
 clearMessages();
 document.getElementById("level2").style.display = "none";
 document.getElementById("level3").style.display = "none";
@@ -757,54 +945,26 @@ function goToLevel3() {
 loadLevel3();
 }
 
-async function loadCountries() {
-try {
-const res = await fetch(COUNTRIES_URL);
-const data = await res.json();
-
-// Transformamos al formato que usa el juego
-COUNTRIES = data
-.filter(c => c.alpha2 && c.capital && c.geo && typeof c.geo.lat === "number")
-.map(c => ({
-name: c.name, // nombres en inglés
-capital: c.capital,
-iso2: c.alpha2.toLowerCase(),
-lat: c.geo.lat,
-lng: c.geo.long
-}));
-
-countriesLoaded = true;
-document.getElementById("loading-message").style.display = "none";
-document.getElementById("level1").style.display = "block";
-
-startNewRound();
-} catch (err) {
-console.error(err);
-document.getElementById("loading-message").textContent =
-"Error cargando los países. Revisa tu conexión y recarga la página.";
-}
-}
-
-// ========= EVENTOS DOM =========
+// ========= DOM EVENTS =========
 window.addEventListener("DOMContentLoaded", () => {
-// Inicializar mapa
+// Map
 initMap();
 
-// Cargar países (todos los del mundo)
-loadCountries();
+// Countries already loaded (inline)
+document.getElementById("loading-message").style.display = "none";
+document.getElementById("level1").style.display = "block";
+startNewRound();
 
-// Modo de juego cambia
+// Mode change
 const modeRadios = document.querySelectorAll('input[name="mode"]');
 modeRadios.forEach(radio => {
 radio.addEventListener("change", () => {
-if (countriesLoaded) {
 roundNumber = 1;
 startNewRound();
-}
 });
 });
 
-// Nivel 1: escritura
+// Level 1: writing
 document.getElementById("check-country-btn").addEventListener("click", checkCountryWrite);
 document.getElementById("country-input").addEventListener("keydown", e => {
 if (e.key === "Enter") checkCountryWrite();
@@ -818,7 +978,7 @@ COUNTRIES,
 );
 });
 
-// Nivel 2: escritura
+// Level 2: writing
 document.getElementById("check-capital-btn").addEventListener("click", checkCapitalWrite);
 document.getElementById("capital-input").addEventListener("keydown", e => {
 if (e.key === "Enter") checkCapitalWrite();
@@ -832,16 +992,16 @@ COUNTRIES,
 );
 });
 
-// Botón continuar al mapa (cuando fallas 2 veces la capital en escritura)
+// Continue to map after 2 failed attempts
 document.getElementById("skip-to-map-btn").addEventListener("click", goToLevel3);
 
-// Botón siguiente ronda
+// Next round
 document.getElementById("next-round-btn").addEventListener("click", () => {
 roundNumber++;
 startNewRound();
 });
 
-// Por si se redimensiona la ventana en móvil
+// Resize fix for mobile
 window.addEventListener("resize", () => {
 if (map) {
 setTimeout(() => map.invalidateSize(), 150);
@@ -851,3 +1011,4 @@ setTimeout(() => map.invalidateSize(), 150);
 </script>
 </body>
 </html>
+
